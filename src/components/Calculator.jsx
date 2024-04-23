@@ -5,7 +5,11 @@ export default function Calculator() {
   const [operator, setOperator] = useState('');
   const [secondNum, setSecondNum] = useState('');
   const [result, setResult] = useState('');
-  const [theme, setTheme] = useState('one');
+  const [theme, setTheme] = useState({
+    first: true,
+    second: false,
+    third: false,
+  });
 
   function handleNumClick(num) {
     if (!operator && !secondNum && !result) {
@@ -51,15 +55,27 @@ export default function Calculator() {
     }
   }
 
+  function addComma(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
   const keyCSS =
     'text-skin-main bg-skin-key-num rounded-sm pt-2 pb-1  font-bold border-b-4 border-b-skin-key-num-sd';
 
   return (
-    <div className='bg-skin-main h-full w-full p-4 '>
-      <div className='text-skin-second flex justify-between  items-center mb-3'>
+    <div
+      className={`bg-skin-main h-full w-full p-4 ${
+        theme.second && 'theme-second'
+      } ${theme.third && 'theme-third'}`}
+    >
+      <div
+        className={`${
+          theme.first ? 'text-skin-second' : 'text-skin-main'
+        } flex justify-between  items-center mb-3`}
+      >
         <h1 className='text-sm font-bold '>calc</h1>
         <div className='flex justify-between items-center'>
-          <p className='text-[0.4rem] mr-3 mb-[0.1rem] self-end font-bold'>
+          <p className='text-[0.4rem] mr-3 mb-[0.1rem] self-end font-bold tracking-widest'>
             THEME
           </p>
           <div>
@@ -75,22 +91,59 @@ export default function Calculator() {
               </p>
             </div>
             <div className='bg-skin-toggle p-[0.15rem] grid grid-cols-3 rounded-full'>
-              <button className='bg-skin-key-result h-2 w-2 rounded-full'></button>
-              <button></button>
-              <button></button>
+              <button
+                className={
+                  theme.first && `bg-skin-key-result h-2 w-2 rounded-full`
+                }
+                onClick={() =>
+                  setTheme({
+                    first: true,
+                    second: false,
+                    third: false,
+                  })
+                }
+              ></button>
+              <button
+                className={
+                  theme.second && `bg-skin-key-result h-2 w-2 rounded-full`
+                }
+                onClick={() =>
+                  setTheme({
+                    first: false,
+                    second: true,
+                    third: false,
+                  })
+                }
+              ></button>
+              <button
+                className={
+                  theme.third && `bg-skin-key-result h-2 w-2 rounded-full`
+                }
+                onClick={() =>
+                  setTheme({
+                    first: false,
+                    second: false,
+                    third: true,
+                  })
+                }
+              ></button>
             </div>
           </div>
         </div>
       </div>
-      <div className='bg-skin-screen text-skin-second text-2xl font-bold text-right px-3 py-2 rounded-md leading-none mb-3'>
+      <div
+        className={`bg-skin-screen ${
+          theme.first ? 'text-skin-second' : 'text-skin-main'
+        } text-2xl font-bold text-right px-3 py-2 rounded-md leading-none mb-3 `}
+      >
         <div>
           {!operator && !secondNum && !result
-            ? firstNum || '0'
+            ? addComma(firstNum) || '0'
             : !secondNum && !result
             ? operator
             : !result
-            ? secondNum
-            : result}
+            ? addComma(secondNum)
+            : addComma(result)}
         </div>
       </div>
       <div className='bg-skin-toggle p-3 rounded-md grid grid-cols-4 gap-[0.4rem]'>
@@ -186,13 +239,13 @@ export default function Calculator() {
         </button>
         <button
           onClick={handleDeleteClick}
-          className={`${keyCSS} text-[0.6rem] bg-skin-key text-skin-second border-b-skin-key-sd row-start-1 col-start-4`}
+          className={`rounded-sm pt-2 pb-1  font-bold border-b-4 border-b-skin-key-num-sd text-[0.6rem] text-skin-second border-b-skin-key-sd row-start-1 col-start-4 bg-skin-key`}
         >
           DEL
         </button>
         <button
           onClick={handleResetClick}
-          className={`${keyCSS} text-[0.6rem] bg-skin-key text-skin-second border-b-skin-key-sd row-start-5 col-start-1 col-end-3`}
+          className={`rounded-sm pt-2 pb-1  font-bold border-b-4 border-b-skin-key-num-sd text-[0.6rem] text-skin-second border-b-skin-key-sd row-start-5 col-start-1 col-end-3 bg-skin-key`}
         >
           RESET
         </button>

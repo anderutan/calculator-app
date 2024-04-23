@@ -16,6 +16,32 @@
     --color-text-main: hsl(221, 14%, 31%);
     --color-text-second: hsl(0, 0%, 100%);
   }
+  .theme-second {
+    --color-bg-main: hsl(0, 0%, 90%);
+    --color-bg-toggle: hsl(0, 5%, 81%);
+    --color-bg-screen: hsl(0, 0%, 93%);
+    --color-key-bg: hsl(185, 42%, 37%);
+    --color-key-sd: hsl(185, 58%, 25%);
+    --color-key-result: hsl(25, 98%, 40%);
+    --color-key-result-sd: hsl(25, 99%, 27%);
+    --color-key-num: hsl(45, 7%, 89%);
+    --color-key-num-sd: hsl(35, 11%, 61%);
+    --color-text-main: hsl(60, 10%, 19%);
+    --color-text-second: hsl(0, 0%, 100%);
+  }
+  .theme-third {
+    --color-bg-main: hsl(268, 75%, 9%);
+    --color-bg-toggle: hsl(268, 71%, 12%);
+    --color-bg-screen: hsl(268, 71%, 12%);
+    --color-key-bg: hsl(281, 89%, 26%);
+    --color-key-sd: hsl(285, 91%, 52%);
+    --color-key-result: hsl(176, 100%, 44%);
+    --color-key-result-sd: hsl(177, 92%, 70%);
+    --color-key-num: hsl(268, 47%, 21%);
+    --color-key-num-sd: hsl(290, 70%, 36%);
+    --color-text-main: hsl(52, 100%, 62%);
+    --color-text-second: hsl(0, 0%, 100%);
+  }
 }
 
 /* Box sizing rules */
