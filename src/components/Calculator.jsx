@@ -64,7 +64,7 @@ export default function Calculator() {
           </p>
           <div>
             <div className='grid grid-cols-3'>
-              <p className='justify-self-center text-[0.35rem] font-semibold'>
+              <p className='justify-self-center text-[0.35rem] font-semibold '>
                 1
               </p>
               <p className='justify-self-center text-[0.35rem] font-semibold'>
@@ -94,78 +94,111 @@ export default function Calculator() {
         </div>
       </div>
       <div className='bg-skin-toggle p-3 rounded-md grid grid-cols-4 gap-[0.4rem]'>
-        <button onClick={() => handleNumClick(0)} className={`${keyCSS} `}>
+        <button
+          onClick={() => handleNumClick(0)}
+          className={`${keyCSS} row-start-4 col-start-2`}
+        >
           0
         </button>
-        <button onClick={() => handleNumClick(1)} className={`${keyCSS} `}>
+        <button
+          onClick={() => handleNumClick(1)}
+          className={`${keyCSS} row-start-3 col-start-1`}
+        >
           1
         </button>
-        <button onClick={() => handleNumClick(2)} className={`${keyCSS} `}>
+        <button
+          onClick={() => handleNumClick(2)}
+          className={`${keyCSS} row-start-3 col-start-2`}
+        >
           2
         </button>
-        <button onClick={() => handleNumClick(3)} className={`${keyCSS} `}>
+        <button
+          onClick={() => handleNumClick(3)}
+          className={`${keyCSS} row-start-3 col-start-3`}
+        >
           3
         </button>
-        <button onClick={() => handleNumClick(4)} className={`${keyCSS} `}>
+        <button
+          onClick={() => handleNumClick(4)}
+          className={`${keyCSS} row-start-2 col-start-1`}
+        >
           4
         </button>
-        <button onClick={() => handleNumClick(5)} className={`${keyCSS} `}>
+        <button
+          onClick={() => handleNumClick(5)}
+          className={`${keyCSS} row-start-2 col-start-2`}
+        >
           5
         </button>
-        <button onClick={() => handleNumClick(6)} className={`${keyCSS} `}>
+        <button
+          onClick={() => handleNumClick(6)}
+          className={`${keyCSS} row-start-2 col-start-3`}
+        >
           6
         </button>
-        <button onClick={() => handleNumClick(7)} className={`${keyCSS} `}>
+        <button
+          onClick={() => handleNumClick(7)}
+          className={`${keyCSS} row-start-1 col-start-1`}
+        >
           7
         </button>
-        <button onClick={() => handleNumClick(8)} className={`${keyCSS} `}>
+        <button
+          onClick={() => handleNumClick(8)}
+          className={`${keyCSS} row-start-1 col-start-2`}
+        >
           8
         </button>
-        <button onClick={() => handleNumClick(9)} className={`${keyCSS} `}>
+        <button
+          onClick={() => handleNumClick(9)}
+          className={`${keyCSS} row-start-1 col-start-3`}
+        >
           9
         </button>
-        <button onClick={() => handleNumClick('.')} className={`${keyCSS} `}>
+        <button
+          onClick={() => handleNumClick('.')}
+          className={`${keyCSS} row-start-4 col-start-1`}
+        >
           .
         </button>
         <button
           onClick={() => handleOperationClick('+')}
-          className={`${keyCSS} `}
+          className={`${keyCSS} row-start-2 col-start-4`}
         >
           +
         </button>
         <button
           onClick={() => handleOperationClick('-')}
-          className={`${keyCSS} `}
+          className={`${keyCSS} row-start-3 col-start-4`}
         >
           -
         </button>
         <button
           onClick={() => handleOperationClick('*')}
-          className={`${keyCSS} `}
+          className={`${keyCSS} row-start-4 col-start-4`}
         >
           x
         </button>
         <button
           onClick={() => handleOperationClick('/')}
-          className={`${keyCSS} `}
+          className={`${keyCSS} row-start-4 col-start-3`}
         >
           /
         </button>
         <button
           onClick={handleDeleteClick}
-          className={`${keyCSS} text-[0.6rem] bg-skin-key text-skin-second border-b-skin-key-sd`}
+          className={`${keyCSS} text-[0.6rem] bg-skin-key text-skin-second border-b-skin-key-sd row-start-1 col-start-4`}
         >
           DEL
         </button>
         <button
           onClick={handleResetClick}
-          className={`${keyCSS} text-[0.6rem] bg-skin-key text-skin-second border-b-skin-key-sd`}
+          className={`${keyCSS} text-[0.6rem] bg-skin-key text-skin-second border-b-skin-key-sd row-start-5 col-start-1 col-end-3`}
         >
           RESET
         </button>
         <button
           onClick={handleCalculate}
-          className={`${keyCSS} text-[0.6rem] bg-skin-key-result text-skin-second border-b-skin-key-result-sd`}
+          className={`${keyCSS} text-[0.6rem] bg-skin-key-result text-skin-second border-b-skin-key-result-sd row-start-5 col-start-3 col-end-5`}
         >
           =
         </button>
