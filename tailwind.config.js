@@ -7,6 +7,7 @@ export default {
         skin: {
           main: 'var(--color-text-main)',
           second: 'var(--color-text-second)',
+          third: 'var(--color-text-third)',
         },
       },
       backgroundColor: {

@@ -1,63 +1,152 @@
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
+import DigitButton from './DigitButton';
+import OperationButton from './OperationButton';
+
+export const ACTIONS = {
+  ADD_DIGIT: 'add-digit',
+  CHOOSE_OPERATION: 'choose-operation',
+  CLEAR: 'clear',
+  DELETE_DIGIT: 'delete-digit',
+  EVALUATE: 'evaluate',
+};
+
+function reducer(state, { type, payload }) {
+  switch (type) {
+    case ACTIONS.ADD_DIGIT:
+      if (state.overwrite) {
+        return {
+          ...state,
+          currentOperand: payload.digit,
+          overwrite: false,
+        };
+      }
+      if (payload.digit === '0' && state.currentOperand === '0') {
+        return state;
+      }
+      if (payload.digit === '.' && state.currentOperand === null) {
+        return state;
+      }
+
+      if (payload.digit === '.' && state.currentOperand.includes('.')) {
+        return state;
+      }
+      return {
+        ...state,
+        currentOperand: `${state.currentOperand || ''}${payload.digit}`,
+      };
+    case ACTIONS.CHOOSE_OPERATION:
+      if (state.currentOperand == null && state.previousOperand == null) {
+        return state;
+      }
+
+      if (state.currentOperand == null) {
+        return {
+          ...state,
+          operation: payload.operation,
+        };
+      }
+
+      if (state.previousOperand == null) {
+        return {
+          ...state,
+          operation: payload.operation,
+          previousOperand: state.currentOperand,
+          currentOperand: null,
+        };
+      }
+      return {
+        ...state,
+        previousOperand: evaluate(state),
+        operation: payload.operation,
+        currentOperand: null,
+      };
+    case ACTIONS.CLEAR:
+      return {
+        ...state,
+        currentOperand: '0',
+        previousOperand: null,
+        operation: null,
+      };
+    case ACTIONS.DELETE_DIGIT:
+      if (state.overwrite) {
+        return {
+          ...state,
+          overwrite: false,
+          currentOperand: null,
+        };
+      }
+      if (state.currentOperand == null) return state;
+      if (state.currentOperand.length === 1) {
+        return { ...state, currentOperand: null };
+      }
+
+      return {
+        ...state,
+        currentOperand: state.currentOperand.slice(0, -1),
+      };
+    case ACTIONS.EVALUATE:
+      if (
+        state.operation == null ||
+        state.currentOperand == null ||
+        state.previousOperand == null
+      ) {
+        return state;
+      }
+
+      return {
+        ...state,
+        overwrite: true,
+        previousOperand: null,
+        operation: null,
+        currentOperand: evaluate(state),
+      };
+  }
+}
+
+function evaluate({ currentOperand, previousOperand, operation }) {
+  const prev = parseFloat(previousOperand);
+  const current = parseFloat(currentOperand);
+  if (isNaN(prev) || isNaN(current)) return '';
+  let computation = '';
+  switch (operation) {
+    case '+':
+      computation = prev + current;
+      break;
+    case '-':
+      computation = prev - current;
+      break;
+    case 'x':
+      computation = prev * current;
+      break;
+    case '/':
+      computation = prev / current;
+      break;
+  }
+  return computation.toString();
+}
+
+const INTERGER_FORMATTER = new Intl.NumberFormat('en-us', {
+  maximumFractionDigits: 0,
+});
+
+function formatOperand(operand) {
+  if (operand == null) return;
+  const [integer, decimal] = operand.split('.');
+  if (decimal == null) return INTERGER_FORMATTER.format(integer);
+  return `${INTERGER_FORMATTER.format(integer)}.${decimal}`;
+}
 
 export default function Calculator() {
-  const [firstNum, setFirstNum] = useState('');
-  const [operator, setOperator] = useState('');
-  const [secondNum, setSecondNum] = useState('');
-  const [result, setResult] = useState('');
+  const [{ currentOperand, previousOperand, operation }, dispatch] = useReducer(
+    reducer,
+    {}
+  );
+
   const [theme, setTheme] = useState({
     first: true,
     second: false,
     third: false,
   });
-
-  function handleNumClick(num) {
-    if (!operator && !secondNum && !result) {
-      setFirstNum((prev) => prev + num);
-    } else if (!operator && !secondNum && result) {
-      setResult('');
-      setFirstNum((prev) => prev + num);
-    } else {
-      setSecondNum((prev) => prev + num);
-    }
-  }
-
-  function handleOperationClick(type) {
-    setOperator(type);
-  }
-
-  function handleCalculate() {
-    const num1 = parseInt(firstNum);
-    const num2 = parseInt(secondNum);
-    if (operator === '+') setResult(num1 + num2);
-    else if (operator === '-') setResult(num1 - num2);
-    else if (operator === '*') setResult(num1 * num2);
-    else if (operator === '/') setResult(num1 / num2);
-    setFirstNum('');
-    setOperator('');
-    setSecondNum('');
-  }
-
-  function handleResetClick() {
-    setFirstNum('');
-    setOperator('');
-    setSecondNum('');
-    setResult('');
-  }
-
-  function handleDeleteClick() {
-    if (!operator && !secondNum) {
-      setFirstNum((prev) => prev.slice(0, -1));
-    } else if (!secondNum) {
-      setOperator('');
-    } else {
-      setSecondNum((prev) => prev.slice(0, -1));
-    }
-  }
-
-  function addComma(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  }
 
   const keyCSS =
     'text-skin-main bg-skin-key-num rounded-sm pt-2 pb-1  font-bold border-b-4 border-b-skin-key-num-sd';
@@ -134,124 +223,108 @@ export default function Calculator() {
       <div
         className={`bg-skin-screen ${
           theme.first ? 'text-skin-second' : 'text-skin-main'
-        } text-2xl font-bold text-right px-3 py-2 rounded-md leading-none mb-3 `}
+        } text-2xl font-bold text-right px-3 py-2 pb-1 rounded-md leading-none mb-3 h-10`}
+        style={{ wordWrap: 'break-word' }}
       >
-        <div>
-          {!operator && !secondNum && !result
-            ? addComma(firstNum) || '0'
-            : !secondNum && !result
-            ? operator
-            : !result
-            ? addComma(secondNum)
-            : addComma(result)}
+        <div className='text-[0.5rem] min-h-2'>
+          {formatOperand(previousOperand)} {operation}
         </div>
+        <div className='text-sm min-h-2'>{formatOperand(currentOperand)}</div>
       </div>
       <div className='bg-skin-toggle p-3 rounded-md grid grid-cols-4 gap-[0.4rem]'>
+        <DigitButton
+          dispatch={dispatch}
+          digit='0'
+          classBtn={`${keyCSS} row-start-4 col-start-2`}
+        />
+        <DigitButton
+          dispatch={dispatch}
+          digit='1'
+          classBtn={`${keyCSS} row-start-3 col-start-1`}
+        />
+        <DigitButton
+          dispatch={dispatch}
+          digit='2'
+          classBtn={`${keyCSS} row-start-3 col-start-2`}
+        />
+        <DigitButton
+          dispatch={dispatch}
+          digit='3'
+          classBtn={`${keyCSS} row-start-3 col-start-3`}
+        />
+        <DigitButton
+          dispatch={dispatch}
+          digit='4'
+          classBtn={`${keyCSS} row-start-2 col-start-1`}
+        />
+        <DigitButton
+          dispatch={dispatch}
+          digit='5'
+          classBtn={`${keyCSS} row-start-2 col-start-2`}
+        />
+        <DigitButton
+          dispatch={dispatch}
+          digit='6'
+          classBtn={`${keyCSS} row-start-2 col-start-3`}
+        />
+        <DigitButton
+          dispatch={dispatch}
+          digit='7'
+          classBtn={`${keyCSS} row-start-1 col-start-1`}
+        />
+        <DigitButton
+          dispatch={dispatch}
+          digit='8'
+          classBtn={`${keyCSS} row-start-1 col-start-2`}
+        />
+        <DigitButton
+          dispatch={dispatch}
+          digit='9'
+          classBtn={`${keyCSS} row-start-1 col-start-3`}
+        />
+        <DigitButton
+          dispatch={dispatch}
+          digit='.'
+          classBtn={`${keyCSS} row-start-4 col-start-1`}
+        />
+        <OperationButton
+          dispatch={dispatch}
+          operation='+'
+          classBtn={`${keyCSS} row-start-2 col-start-4`}
+        />
+        <OperationButton
+          dispatch={dispatch}
+          operation='-'
+          classBtn={`${keyCSS} row-start-3 col-start-4`}
+        />
+        <OperationButton
+          dispatch={dispatch}
+          operation='x'
+          classBtn={`${keyCSS} row-start-4 col-start-4`}
+        />
+        <OperationButton
+          dispatch={dispatch}
+          operation='/'
+          classBtn={`${keyCSS} row-start-4 col-start-3`}
+        />
+
         <button
-          onClick={() => handleNumClick(0)}
-          className={`${keyCSS} row-start-4 col-start-2`}
-        >
-          0
-        </button>
-        <button
-          onClick={() => handleNumClick(1)}
-          className={`${keyCSS} row-start-3 col-start-1`}
-        >
-          1
-        </button>
-        <button
-          onClick={() => handleNumClick(2)}
-          className={`${keyCSS} row-start-3 col-start-2`}
-        >
-          2
-        </button>
-        <button
-          onClick={() => handleNumClick(3)}
-          className={`${keyCSS} row-start-3 col-start-3`}
-        >
-          3
-        </button>
-        <button
-          onClick={() => handleNumClick(4)}
-          className={`${keyCSS} row-start-2 col-start-1`}
-        >
-          4
-        </button>
-        <button
-          onClick={() => handleNumClick(5)}
-          className={`${keyCSS} row-start-2 col-start-2`}
-        >
-          5
-        </button>
-        <button
-          onClick={() => handleNumClick(6)}
-          className={`${keyCSS} row-start-2 col-start-3`}
-        >
-          6
-        </button>
-        <button
-          onClick={() => handleNumClick(7)}
-          className={`${keyCSS} row-start-1 col-start-1`}
-        >
-          7
-        </button>
-        <button
-          onClick={() => handleNumClick(8)}
-          className={`${keyCSS} row-start-1 col-start-2`}
-        >
-          8
-        </button>
-        <button
-          onClick={() => handleNumClick(9)}
-          className={`${keyCSS} row-start-1 col-start-3`}
-        >
-          9
-        </button>
-        <button
-          onClick={() => handleNumClick('.')}
-          className={`${keyCSS} row-start-4 col-start-1`}
-        >
-          .
-        </button>
-        <button
-          onClick={() => handleOperationClick('+')}
-          className={`${keyCSS} row-start-2 col-start-4`}
-        >
-          +
-        </button>
-        <button
-          onClick={() => handleOperationClick('-')}
-          className={`${keyCSS} row-start-3 col-start-4`}
-        >
-          -
-        </button>
-        <button
-          onClick={() => handleOperationClick('*')}
-          className={`${keyCSS} row-start-4 col-start-4`}
-        >
-          x
-        </button>
-        <button
-          onClick={() => handleOperationClick('/')}
-          className={`${keyCSS} row-start-4 col-start-3`}
-        >
-          /
-        </button>
-        <button
-          onClick={handleDeleteClick}
           className={`rounded-sm pt-2 pb-1  font-bold border-b-4 border-b-skin-key-num-sd text-[0.6rem] text-skin-second border-b-skin-key-sd row-start-1 col-start-4 bg-skin-key`}
+          onClick={() => dispatch({ type: ACTIONS.DELETE_DIGIT })}
         >
           DEL
         </button>
         <button
-          onClick={handleResetClick}
           className={`rounded-sm pt-2 pb-1  font-bold border-b-4 border-b-skin-key-num-sd text-[0.6rem] text-skin-second border-b-skin-key-sd row-start-5 col-start-1 col-end-3 bg-skin-key`}
+          onClick={() => dispatch({ type: ACTIONS.CLEAR })}
         >
           RESET
         </button>
         <button
-          onClick={handleCalculate}
-          className={`${keyCSS} text-[0.6rem] bg-skin-key-result text-skin-second border-b-skin-key-result-sd row-start-5 col-start-3 col-end-5`}
+          className={`${keyCSS} text-[0.6rem] bg-skin-key-result border-b-skin-key-result-sd row-start-5 col-start-3 col-end-5 ${
+            theme.third ? 'text-skin-third' : 'text-skin-second'
+          }`}
+          onClick={() => dispatch({ type: ACTIONS.EVALUATE })}
         >
           =
         </button>
