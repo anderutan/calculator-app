@@ -17,7 +17,9 @@ export default {
           screen: 'var(--color-bg-screen)',
           key: 'var(--color-key-bg)',
           'key-result': 'var(--color-key-result)',
+          'key-result-tg': 'var(--color-key-result-tg)',
           'key-num': 'var(--color-key-num)',
+          'key-tg': 'var(--color-key-bg-tg)',
         },
       },
       borderColor: {
